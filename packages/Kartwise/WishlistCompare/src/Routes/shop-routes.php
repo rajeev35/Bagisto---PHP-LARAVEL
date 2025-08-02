@@ -3,14 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Kartwise\WishlistCompare\Http\Controllers\WishlistCompareController;
 
-Route::group(['middleware' => ['web', 'theme', 'locale', 'currency']], function () {
+Route::group(['middleware' => ['web', 'shop']], function () {
 
-    // counts endpoint (with optional test fallback)
     Route::get('wishlistcompare/counts', function (Request $request) {
         $customerId = auth()->guard('customer')->check()
             ? auth()->guard('customer')->user()->id
-            : $request->query('customer_id'); // for quick testing
+            : $request->query('customer_id');
 
         $wishlistCount = 0;
         $compareCount = 0;
@@ -26,7 +26,6 @@ Route::group(['middleware' => ['web', 'theme', 'locale', 'currency']], function 
         ]);
     })->name('shop.wishlistcompare.counts');
 
-    // wishlist add/remove
     Route::post('wishlistcompare/wishlist/add', function (Request $request) {
         if (! auth()->guard('customer')->check()) {
             return response()->json(['message' => 'unauthenticated'], 401);
@@ -64,7 +63,6 @@ Route::group(['middleware' => ['web', 'theme', 'locale', 'currency']], function 
         return response()->json(['success' => true]);
     })->name('shop.wishlistcompare.wishlist.remove');
 
-    // compare add/remove
     Route::post('wishlistcompare/compare/add', function (Request $request) {
         if (! auth()->guard('customer')->check()) {
             return response()->json(['message' => 'unauthenticated'], 401);
@@ -101,4 +99,9 @@ Route::group(['middleware' => ['web', 'theme', 'locale', 'currency']], function 
 
         return response()->json(['success' => true]);
     })->name('shop.wishlistcompare.compare.remove');
+
+    Route::get('customer/wishlist', [WishlistCompareController::class, 'wishlistPage'])
+        ->name('customer.wishlist.index');
+        
 });
+
