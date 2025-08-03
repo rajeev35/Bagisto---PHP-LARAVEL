@@ -3,7 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Kartwise\WishlistCompare\Http\Controllers\WishlistCompareController;
+use Kartwise\WishlistCompare\Http\Controllers\Shop\WishlistCompareController;
+
 
 Route::group(['middleware' => ['web', 'shop']], function () {
 
@@ -102,6 +103,14 @@ Route::group(['middleware' => ['web', 'shop']], function () {
 
     Route::get('customer/wishlist', [WishlistCompareController::class, 'wishlistPage'])
         ->name('customer.wishlist.index');
+
+        Route::get('wishlistcompare/counts', [WishlistCompareController::class, 'counts'])
+    ->name('wishlistcompare.counts');
+
+
+
+
+
         
 });
 

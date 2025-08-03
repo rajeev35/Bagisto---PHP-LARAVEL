@@ -102,18 +102,83 @@
 
             {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.compare.before') !!}
 
+           
             <!-- Compare -->
-            @if(core()->getConfigData('catalog.products.settings.compare_option'))
-                <a
-                    href="{{ route('shop.compare.index') }}"
-                    aria-label="@lang('shop::app.components.layouts.header.desktop.bottom.compare')"
-                >
-                    <span
-                        class="icon-compare inline-block cursor-pointer text-2xl"
-                        role="presentation"
-                    ></span>
-                </a>
-            @endif
+        @if(core()->getConfigData('catalog.products.settings.compare_option'))
+            <a href="{{ route('shop.compare.index') }}" aria-label="Compare" class="relative">
+                <span class="icon-compare inline-block cursor-pointer text-2xl" role="presentation"></span>
+                <span
+                    id="compare-count-badge"
+                    class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-navyBlue text-[10px] text-white"
+                    style="display: none;"
+                >0</span>
+            </a>
+        @endif
+
+        <!-- Wishlist -->
+        @if (core()->getConfigData('customer.settings.wishlist.wishlist_option'))
+            <a
+                href="{{ route('shop.customers.account.wishlist.index') }}"
+                aria-label="@lang('shop::app.components.layouts.header.desktop.bottom.wishlist')"
+                class="relative"
+            >
+                <span class="icon-heart inline-block cursor-pointer text-2xl" role="presentation"></span>
+
+                <span
+                    id="wishlist-count-badge"
+                    class="absolute -top-4 rounded-[44px] bg-navyBlue px-2 py-1.5 text-xs font-semibold leading-[9px] text-white ltr:left-5 rtl:right-5 max-md:ltr:left-4 max-md:rtl:right-4"
+                    aria-label="Wishlist count"
+                    style="display: none;"
+                >0</span>
+            </a>
+        @endif
+
+
+            <script>
+                (function(){
+                    function getCookie(name) {
+                        return document.cookie
+                            .split('; ')
+                            .find(row => row.startsWith(name + '='))
+                            ?.split('=')[1] || '';
+                    }
+
+                    async function refreshCounts() {
+                        try {
+                            const res = await fetch("{{ route('wishlistcompare.counts') }}", {
+                                credentials: 'same-origin',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'X-XSRF-TOKEN': decodeURIComponent(getCookie('XSRF-TOKEN')),
+                                }
+                            });
+
+                            if (!res.ok) throw new Error('Network response was not ok');
+
+                            const { wishlist, compare } = await res.json();
+
+                            const wishBadge = document.getElementById('wishlist-count-badge');
+                            const compBadge = document.getElementById('compare-count-badge');
+
+                            if (wishBadge) {
+                                wishBadge.textContent = wishlist ?? 0;
+                                wishBadge.style.display = (wishlist > 0) ? 'flex' : 'none';
+                            }
+
+                            if (compBadge) {
+                                compBadge.textContent = compare ?? 0;
+                                compBadge.style.display = (compare > 0) ? 'flex' : 'none';
+                            }
+                        } catch (e) {
+                            console.error('Failed to refresh wishlist/compare counts:', e);
+                        }
+                    }
+
+                    document.addEventListener('DOMContentLoaded', refreshCounts);
+                    window.addEventListener('wishlist:updated', refreshCounts);
+                    window.addEventListener('compare:updated', refreshCounts);
+                })();
+            </script>
 
             {!! view_render_event('bagisto.shop.components.layouts.header.desktop.bottom.compare.after') !!}
 

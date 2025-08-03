@@ -1,57 +1,35 @@
 <?php
 
-namespace Kartwise\WishlistCompare\Http\Controllers;
+namespace Kartwise\WishlistCompare\Http\Controllers\Shop;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Webkul\Customer\Repositories\WishlistRepository;
 
 class WishlistCompareController extends Controller
 {
-    public function wishlistPage(Request $request)
+    public function counts(Request $request)
     {
-        $customer = auth()->guard('customer')->user();
-        if (! $customer) {
-            return redirect()->route('customer.session.create'); // login if not
+        $wishlistCount = 0;
+        $compareCount = 0;
+
+        if (Auth::guard('customer')->check()) {
+            $customer = Auth::guard('customer')->user();
+            $wishlistRepo = app(WishlistRepository::class);
+
+            // हर wishlist entry एक item है:
+            $wishlistCount = $wishlistRepo->findWhere(['customer_id' => $customer->id])->count();
         }
 
-        $productIds = DB::table('kartwise_wishlist_items')
-            ->where('customer_id', $customer->id)
-            ->pluck('product_id')
-            ->toArray();
-
-        $products = collect();
-        if (! empty($productIds)) {
-            $productRepository = app('Webkul\Product\Repositories\ProductRepository');
-            $products = $productRepository->findWhereIn('id', $productIds);
+        $compare = session()->get('compare', []);
+        if (is_array($compare)) {
+            $compareCount = count($compare);
         }
 
-        return view('wishlistcompare::shop.account.wishlist.index', [
-            'products' => $products,
-        ]);
-    }
-
-
-    public function comparePage(Request $request)
-    {
-        $customer = auth()->guard('customer')->user();
-        if (! $customer) {
-            return redirect()->route('customer.session.create');
-        }
-
-        $productIds = DB::table('kartwise_compare_items')
-            ->where('customer_id', $customer->id)
-            ->pluck('product_id')
-            ->toArray();
-
-        $products = collect();
-        if (! empty($productIds)) {
-            $productRepository = app('Webkul\Product\Repositories\ProductRepository');
-            $products = $productRepository->findWhereIn('id', $productIds);
-        }
-
-        return view('wishlistcompare::shop.account.compare.index', [
-            'products' => $products,
+        return response()->json([
+            'wishlist' => $wishlistCount,
+            'compare'  => $compareCount,
         ]);
     }
 }
