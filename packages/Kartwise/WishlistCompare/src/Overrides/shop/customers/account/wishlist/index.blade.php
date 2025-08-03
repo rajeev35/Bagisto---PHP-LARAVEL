@@ -302,11 +302,15 @@
                                         this.wishlistItems = [];
 
                                         this.$emitter.emit('add-flash', { type: 'success', message: response.data.data.message });
+
+                                        
+                                        window.dispatchEvent(new Event('wishlist:updated'));
                                     })
                                     .catch(error => {});
                             },
                         });
                     },
+
                 },
             });
 
@@ -333,11 +337,15 @@
                                         this.$emit('wishlist-items', response.data.data);
 
                                         this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
+
+                                        
+                                        window.dispatchEvent(new Event('wishlist:updated'));
                                     })
                                     .catch(error => {});
                             },
                         });
                     },
+
 
                     moveToCart() {
                         this.movingToCart = true;
@@ -351,17 +359,16 @@
                             .then(response => {
                                 if (response.data?.redirect) {
                                     this.$emitter.emit('add-flash', { type: 'warning', message: response.data.message });
-
                                     window.location.href = response.data.data;
-
                                     return;
                                 }
 
                                 this.$emit('wishlist-items', response.data.data?.wishlist);
-
                                 this.$emitter.emit('update-mini-cart', response.data.data.cart);
-
                                 this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
+
+                                
+                                window.dispatchEvent(new Event('wishlist:updated'));
 
                                 this.movingToCart = false;
                             })
