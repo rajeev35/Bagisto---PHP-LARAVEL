@@ -107,6 +107,15 @@ Route::group(['middleware' => ['web', 'shop']], function () {
         Route::get('wishlistcompare/counts', [WishlistCompareController::class, 'counts'])
     ->name('wishlistcompare.counts');
 
+Route::get('wishlistcompare/counts', [WishlistCompareController::class, 'counts'])
+    ->name('wishlistcompare.counts')
+    ->middleware(['web']);
+
+
+
+Route::get('wishlistcompare/counts', [WishlistCompareController::class, 'counts'])->name('wishlistcompare.counts');
+
+
 
 
 
