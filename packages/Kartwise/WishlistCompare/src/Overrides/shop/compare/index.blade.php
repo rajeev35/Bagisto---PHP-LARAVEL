@@ -211,19 +211,23 @@
                             })
                             .catch(error => {});
                     },
-
+                  
                     remove(productId) {
                         this.$emitter.emit('open-confirm-modal', {
                             agree: () => {
                                 if (! this.isCustomer) {
                                     const index = this.items.findIndex((item) => item.id === productId);
-
-                                    this.items.splice(index, 1);
+                                    if (index !== -1) this.items.splice(index, 1);
 
                                     let items = this.getStorageValue()
                                         .filter(item => item != productId);
 
                                     localStorage.setItem('compare_items', JSON.stringify(items));
+
+                                    this.$emitter.emit('add-flash', { type: 'success', message: "@lang('shop::app.compare.remove-success')" });
+
+                                    
+                                    window.dispatchEvent(new Event('compare:updated'));
 
                                     return;
                                 }
@@ -237,27 +241,32 @@
 
                                         this.$emitter.emit('add-flash', { type: 'success', message: response.data.message });
 
+                                        
+                                        window.dispatchEvent(new Event('compare:updated'));
                                     })
                                     .catch(error => {
-                                        this.$emitter.emit('add-flash', { type: 'error', message: response.data.message });
+                                        this.$emitter.emit('add-flash', { type: 'error', message: error?.response?.data?.message ?? 'Error' });
                                     });
                             }
                         });
                     },
+
 
                     removeAll() {
                         this.$emitter.emit('open-confirm-modal', {
                             agree: () => {
                                 if (! this.isCustomer) {
                                     localStorage.removeItem('compare_items');
-
                                     this.items = [];
 
                                     this.$emitter.emit('add-flash', { type: 'success', message:  "@lang('shop::app.compare.remove-all-success')" });
 
+                                    
+                                    window.dispatchEvent(new Event('compare:updated'));
+
                                     return;
                                 }
-                                
+
                                 this.$axios.post("{{ route('shop.api.compare.destroy_all') }}", {
                                         '_method': 'DELETE',
                                     })
@@ -265,11 +274,15 @@
                                         this.items = [];
 
                                         this.$emitter.emit('add-flash', { type: 'success', message: response.data.data.message });
+
+                                        
+                                        window.dispatchEvent(new Event('compare:updated'));
                                     })
                                     .catch(error => {});
                             }
                         });
                     },
+
 
                     getStorageValue() {
                         let value = localStorage.getItem('compare_items');
