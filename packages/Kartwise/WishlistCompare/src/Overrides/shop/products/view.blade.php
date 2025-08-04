@@ -587,6 +587,7 @@
                                 this.setStorageValue(this.getCompareItemsStorageKey(), existingItems);
 
                                 this.$emitter.emit('add-flash', { type: 'success', message: "@lang('shop::app.products.view.add-to-compare')" });
+                                 window.dispatchEvent(new Event('compare:updated'));
                             } else {
                                 this.$emitter.emit('add-flash', { type: 'warning', message: "@lang('shop::app.products.view.already-in-compare')" });
                             }
@@ -594,6 +595,7 @@
                             this.setStorageValue(this.getCompareItemsStorageKey(), [productId]);
 
                             this.$emitter.emit('add-flash', { type: 'success', message: "@lang('shop::app.products.view.add-to-compare')" });
+                             window.dispatchEvent(new Event('compare:updated'));
                         }
                     },
 
