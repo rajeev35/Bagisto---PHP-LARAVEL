@@ -51,13 +51,13 @@
                             <h2 class="text-2xl font-medium max-md:text-xl max-sm:text-base ltr:ml-2.5 md:ltr:ml-0 rtl:mr-2.5 md:rtl:mr-0">
                                 @lang('shop::app.customers.account.wishlist.page-title')
                                 <span
-                                    v-if="!isLoading"
+                                    v-if="!isLoading && wishlistItems.length > 0"
                                     class="ml-3 inline-flex items-center px-4 py-1 rounded-full shadow"
                                     style="background:#fde68a; border:2px solid #4f46e5; color:#1f2937;"
-                                    >
-                                    <!-- @{{ totalCount }} Items -->
-                                    @{{ wishlistItems.length }} Items
+                                >
+                                    @{{ wishlistItems.length }} @{{ wishlistItems.length > 1 ? 'Items' : 'Item' }}
                                 </span>
+
                             </h2>
                             
                         </div>

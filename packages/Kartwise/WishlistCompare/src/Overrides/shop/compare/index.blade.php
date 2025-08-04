@@ -47,14 +47,14 @@
 
                         <h1 class="text-2xl font-medium max-sm:text-base">
                             @lang('shop::app.compare.title')
-                            <span
-                                v-if="!isLoading"
+                           <span
+                                v-if="!isLoading && items.length > 0"
                                 class="ml-3 inline-flex items-center px-4 py-1 rounded-full shadow"
                                 style="background:#fde68a; border:2px solid #4f46e5; color:#1f2937;"
-                                >
-                                <!-- @{{ totalCount }} Items -->
-                                 @{{ items.length }} Items
+                            >
+                                @{{ items.length }} @{{ items.length > 1 ? 'Items' : 'Item' }}
                             </span>
+
                         </h1>
 
                         {!! view_render_event('bagisto.shop.customers.account.compare.title.after') !!}
