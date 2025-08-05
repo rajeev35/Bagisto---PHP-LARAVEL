@@ -43,4 +43,6 @@ return [
     Webkul\Tax\Providers\TaxServiceProvider::class,
     Webkul\Theme\Providers\ThemeServiceProvider::class,
     Webkul\User\Providers\UserServiceProvider::class,
+    Kartwise\WishlistCompare\Providers\WishlistCompareServiceProvider::class,
+
 ];
